@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ffd400">
+  <title>Svapo&Basta | Guida diluizioni</title>
+  <style>
+    :root { --yellow:#ffd400; --ink:#171717; --muted:#6c6c6c; --paper:#f5f5f5; --line:#dedede; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:#f2f2f2; color:var(--ink); font-family:Arial,Helvetica,sans-serif; }
+    header { background:var(--yellow); padding:22px 18px 18px; border-bottom:4px solid var(--ink); }
+    .wrap { max-width:980px; margin:0 auto; }
+    .brand { font-size:13px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; }
+    h1 { margin:7px 0 0; font-size:clamp(25px,5vw,38px); line-height:1.05; }
+    header p { margin:9px 0 0; font-size:14px; }
+    main { max-width:980px; margin:22px auto; padding:0 14px 35px; }
+    .panel { background:white; border:1px solid var(--line); border-radius:16px; padding:18px; box-shadow:0 4px 18px #0000000a; }
+    .steps { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:18px; }
+    .step { background:#f3f3f3; border-radius:10px; padding:12px; font-size:13px; line-height:1.35; }
+    .step b { display:block; font-size:20px; margin-bottom:3px; }
+    .controls { display:grid; grid-template-columns:1.4fr 1fr; gap:14px; align-items:end; }
+    label { display:block; font-weight:800; font-size:13px; margin-bottom:7px; }
+    select { width:100%; border:1px solid #bdbdbd; border-radius:10px; padding:13px 12px; background:white; color:#171717; font-size:16px; }
+    .segmented { display:flex; gap:8px; }
+    .segmented button { flex:1; border:1px solid #bdbdbd; border-radius:10px; padding:13px 8px; font-weight:800; background:white; font-size:14px; cursor:pointer; }
+    .segmented button.active { background:var(--ink); color:white; border-color:var(--ink); }
+    .caption { margin:17px 0 10px; display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    .caption h2 { margin:0; font-size:18px; }
+    .tag { background:var(--yellow); border:1px solid var(--ink); border-radius:99px; padding:5px 11px; font-size:12px; font-weight:900; }
+    .source-note { color:var(--muted); font-size:13px; margin:0 0 12px; }
+    .image-frame { background:#fff; border:1px solid var(--line); border-radius:12px; overflow:hidden; text-align:center; }
+    .image-frame img { display:block; width:100%; height:auto; }
+    .actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; }
+    .actions a { display:inline-block; background:var(--ink); color:white; text-decoration:none; border-radius:9px; padding:11px 14px; font-weight:700; font-size:13px; }
+    .foot { margin-top:18px; color:#666; font-size:12px; line-height:1.5; }
+    .warning { margin-top:14px; border-left:4px solid var(--yellow); background:#fff9d8; padding:11px 13px; font-size:13px; line-height:1.45; }
+    @media (max-width:650px) {
+      .steps { grid-template-columns:1fr; gap:7px; }
+      .step { display:flex; gap:10px; align-items:center; padding:9px 11px; }
+      .step b { margin:0; font-size:22px; min-width:22px; }
+      .controls { grid-template-columns:1fr; }
+      .panel { padding:13px; }
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="brand">Svapo&Basta · Strumento per il punto vendita</div>
+    <h1>Guida alle diluizioni</h1>
+    <p>Scegli il formato e il tipo di tiro per consultare la tabella ufficiale.</p>
+  </div>
+</header>
+<main>
+  <div class="steps">
+    <div class="step"><b>1</b><span>Scegli il formato del liquido.</span></div>
+    <div class="step"><b>2</b><span>Seleziona guancia (MTL) o polmone (DL/RDL).</span></div>
+    <div class="step"><b>3</b><span>Leggi la riga della nicotina finale e segui la ricetta.</span></div>
+  </div>
+
+  <section class="panel">
+    <div class="controls">
+      <div>
+        <label for="format">FORMATO</label>
+        <select id="format">
+          <option value="mix-10-10">Mix & Vape 10+10 · 20 ml finali</option>
+          <option value="mix-20-40">Mix & Vape 20+40 · 60 ml finali</option>
+          <option value="shot-20-40">Shot 20+40 · 60 ml finali</option>
+          <option value="shot-10-50">Shot 10+50 · 60 ml finali</option>
+          <option value="shot-5-55">Shot 5+55 · 60 ml finali</option>
+          <option value="mini-10-10">Mini Shot 10+10 · 20 ml finali</option>
+          <option value="mini-10-20">Mini Shot 10+20 · 30 ml finali</option>
+        </select>
+      </div>
+      <div>
+        <label>TIPO DI TIRO</label>
+        <div class="segmented" role="group" aria-label="Tipo di tiro">
+          <button type="button" class="active" data-tiro="guancia" aria-pressed="true">Guancia</button>
+          <button type="button" data-tiro="polmone" aria-pressed="false">Polmone</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="caption">
+      <h2 id="tableTitle">Mix & Vape 10+10</h2>
+      <span class="tag" id="finalVolume">20 ml finali</span>
+    </div>
+    <p class="source-note" id="tableDescription">Tabella ufficiale Svapo&Basta · tiro di guancia (MTL).</p>
+    <div class="image-frame">
+      <img id="sourceImage" src="mix-10-10.jpg" alt="Tabella ufficiale di diluizione">
+    </div>
+    <div class="actions">
+      <a id="openImage" href="mix-10-10.jpg" target="_blank" rel="noopener">Apri tabella a grandezza originale</a>
+    </div>
+    <div class="warning">
+      Le ricette visualizzate riproducono le tabelle originali fornite. Non vengono calcolate o modificate dall'app: scegli la riga della nicotina finale e rispetta quantità e tipologia delle basette indicate nella fonte.
+    </div>
+    <p class="foot">Versione iniziale basata esclusivamente sulle 7 immagini caricate. Le immagini sono mantenute integre per non introdurre errori di trascrizione. Prossimo sviluppo: rendere selezionabile direttamente la gradazione finale e mostrare la sola ricetta corrispondente.</p>
+  </section>
+</main>
+<script>
+  const formats = {
+    "mix-10-10": {
+      title:"Mix & Vape 10+10", volume:"20 ml finali",
+      description:"Aroma 10 ml · tabella ufficiale Mix & Vape 10+10.",
+      guancia:"mix-10-10.jpg", polmone:"mix-10-10.jpg"
+    },
+    "mix-20-40": {
+      title:"Mix & Vape 20+40", volume:"60 ml finali",
+      description:"Aroma 20 ml · tabella ufficiale Mix & Vape 20+40.",
+      guancia:"mix-20-40.jpg", polmone:"mix-20-40.jpg"
+    },
+    "shot-20-40": {
+      title:"Shot 20+40", volume:"60 ml finali",
+      description:"Aroma 20 ml · tabella ufficiale Shot 20+40.",
+      guancia:"shot-20-40.jpg", polmone:"shot-20-40.jpg"
+    },
+    "shot-10-50": {
+      title:"Shot 10+50", volume:"60 ml finali",
+      description:"Aroma 10 ml · tabella ufficiale Shot 10+50.",
+      guancia:"shot-10-50.jpg", polmone:"shot-10-50.jpg"
+    },
+    "shot-5-55": {
+      title:"Shot 5+55", volume:"60 ml finali",
+      description:"Aroma 5 ml · tabella ufficiale Shot 5+55.",
+      guancia:"shot-5-55.jpg", polmone:"shot-5-55.jpg"
+    },
+    "mini-10-10": {
+      title:"Mini Shot 10+10", volume:"20 ml finali",
+      description:"Tabella ufficiale Mini Shot 10+10.",
+      guancia:"mini-10-10.jpg", polmone:"mini-10-10.jpg"
+    },
+    "mini-10-20": {
+      title:"Mini Shot 10+20", volume:"30 ml finali",
+      description:"Tabella ufficiale Mini Shot 10+20.",
+      guancia:"mini-10-20.jpg", polmone:"mini-10-20.jpg"
+    }
+  };
+  const formatSelect = document.getElementById("format");
+  const tiroButtons = [...document.querySelectorAll("[data-tiro]")];
+  let tiro = "guancia";
+
+  function render() {
+    const item = formats[formatSelect.value];
+    const src = item[tiro];
+    document.getElementById("tableTitle").textContent = item.title;
+    document.getElementById("finalVolume").textContent = item.volume;
+    document.getElementById("tableDescription").textContent =
+      item.description + (tiro === "guancia" ? " · Guancia (MTL)." : " · Polmone (DL/RDL).");
+    const img = document.getElementById("sourceImage");
+    img.src = src;
+    img.alt = item.title + " - " + tiro;
+    document.getElementById("openImage").href = src;
+  }
+  formatSelect.addEventListener("change", render);
+  tiroButtons.forEach(btn => btn.addEventListener("click", () => {
+    tiro = btn.dataset.tiro;
+    tiroButtons.forEach(b => {
+      const active = b === btn;
+      b.classList.toggle("active", active);
+      b.setAttribute("aria-pressed", String(active));
+    });
+    render();
+  }));
+  render();
+</script>
+</body>
+</html>
