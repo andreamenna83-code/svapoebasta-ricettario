@@ -89,7 +89,15 @@ select:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(53,216,255,.13)}
 .booster .qty{font-size:16px;font-weight:900;color:#fff}
 .booster .kind{color:#9fb1c7;font-size:12px;margin-top:5px}
 .empty{color:#bdcad9;font-size:14px;padding:14px;background:#172438;border:1px solid #2b4059;border-radius:11px}
+
+.alternatives{margin-top:20px;padding-top:17px;border-top:1px solid var(--line)}
+.alt-intro{font-size:12px;line-height:1.5;color:#9fb1c7;margin:0 0 11px}
+.alt-card{background:linear-gradient(145deg,#152a31,#122333);border:1px solid rgba(66,211,146,.35);border-radius:12px;padding:13px;margin:9px 0}
+.alt-card strong{display:block;color:var(--green);font-size:13px;margin-bottom:6px}
+.alt-card span{display:block;color:#d5e3ee;font-size:13px;line-height:1.5}
+.alt-none{background:#172438;border:1px solid #354a64;border-radius:11px;padding:13px;color:#bdcad9;font-size:13px;line-height:1.5}
 .note{font-size:12px;line-height:1.55;color:#8fa1b7;margin-top:15px}
+
 .copy{
  display:block;width:100%;border:1px solid var(--yellow);
  background:linear-gradient(100deg,var(--yellow),#ffe66b);color:#111827;
@@ -170,8 +178,13 @@ select:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(53,216,255,.13)}
    <div id="boosters"></div>
    <div class="item"><span>Nicotina finale</span><strong id="resNic"></strong></div>
    <div class="item"><span>Volume finale</span><strong id="resVolume"></strong></div>
+   <div class="alternatives">
+    <div class="section-title">Alternative nicotina · scorte negozio</div>
+    <p class="alt-intro">Combinazioni esatte con flaconi interi da 10 ml. Le alternative mantengono invariati nicotina totale e rapporto VG/PG apportato dalle basette originali.</p>
+    <div id="alternatives"></div>
+   </div>
    <button class="copy" id="copyBtn" type="button">Copia ricetta</button>
-   <p class="note">Ricetta riportata dalla tabella ufficiale fornita. Le basette sono conteggiate come flaconi interi da 10 ml. Non sono stati ricalcolati né modificati i dosaggi della fonte.</p>
+   <p class="note">La ricetta principale riproduce la tabella originale. Le alternative sono calcolate solo quando mantengono esattamente nicotina totale e rapporto VG/PG delle basette, usando le scorte configurate.</p>
   </div>
  </section>
  <p class="note">Se una gradazione non compare nell'elenco, significa che non è prevista nella tabella originale per quel formato e tipo di tiro.</p>
@@ -218,6 +231,79 @@ function renderNicotine(){
   document.getElementById("tiroNote").textContent="La selezione cambia la tabella e le ricette disponibili.";
  }
 }
+
+// Inventario negozio: tutte le basette sono flaconi da 10 ml.
+const BOOSTER_STOCK = [
+ {mg:20, mix:"70/30", vg:7, pg:3},
+ {mg:20, mix:"Full VG", vg:10, pg:0},
+ {mg:20, mix:"50/50", vg:5, pg:5},
+ {mg:20, mix:"Full PG", vg:0, pg:10},
+ {mg:18, mix:"50/50", vg:5, pg:5},
+ {mg:18, mix:"Full VG", vg:10, pg:0},
+ {mg:18, mix:"70/30", vg:7, pg:3},
+ {mg:16, mix:"Full VG", vg:10, pg:0},
+ {mg:12, mix:"Full VG", vg:10, pg:0},
+ {mg:12, mix:"50/50", vg:5, pg:5},
+ {mg:9, mix:"Full VG", vg:10, pg:0},
+ {mg:9, mix:"70/30", vg:7, pg:3},
+ {mg:9, mix:"50/50", vg:5, pg:5},
+ {mg:8, mix:"Full VG", vg:10, pg:0},
+ {mg:6, mix:"Full VG", vg:10, pg:0},
+ {mg:6, mix:"50/50", vg:5, pg:5},
+ {mg:4, mix:"Full VG", vg:10, pg:0}
+];
+
+function boosterTotals(list){
+ return list.reduce((a,b)=>{
+  const stock=BOOSTER_STOCK.find(x=>x.mg===b[1] && x.mix===b[2]);
+  if(stock){a.mg+=b[0]*10*stock.mg;a.vg+=b[0]*stock.vg;a.pg+=b[0]*stock.pg;a.bottles+=b[0];}
+  return a;
+ },{mg:0,vg:0,pg:0,bottles:0});
+}
+function findExactAlternatives(original){
+ const target=boosterTotals(original);
+ if(!target.bottles) return [];
+ const found=[];
+ const counts=Array(BOOSTER_STOCK.length).fill(0);
+ function walk(start, remaining, mg, vg, pg){
+  if(remaining===0){
+   if(mg===target.mg && vg===target.vg && pg===target.pg){
+    const combo=counts.map((n,i)=>n?{...BOOSTER_STOCK[i],count:n}:null).filter(Boolean);
+    const originalKey=original.map(b=>b[1]+"|"+b[2]+"|"+b[0]).sort().join(";");
+    const comboKey=combo.map(x=>x.mg+"|"+x.mix+"|"+x.count).sort().join(";");
+    if(comboKey!==originalKey) found.push(combo);
+   }
+   return;
+  }
+  for(let i=start;i<BOOSTER_STOCK.length;i++){
+   const x=BOOSTER_STOCK[i];
+   const nextMg=mg+x.mg*10, nextVg=vg+x.vg, nextPg=pg+x.pg;
+   if(nextMg>target.mg || nextVg>target.vg || nextPg>target.pg) continue;
+   counts[i]++; walk(i,remaining-1,nextMg,nextVg,nextPg); counts[i]--;
+  }
+ }
+ walk(0,target.bottles,0,0,0);
+ return found.slice(0,8);
+}
+function renderAlternatives(original){
+ const host=document.getElementById("alternatives");
+ host.innerHTML="";
+ const alternatives=findExactAlternatives(original);
+ if(!original.length){
+  host.innerHTML='<div class="alt-none">Questa ricetta non utilizza basette: non servono alternative.</div>';return;
+ }
+ if(!alternatives.length){
+  host.innerHTML='<div class="alt-none">Nessuna combinazione alternativa esatta trovata con le scorte configurate. Usa la ricetta originale oppure verifica la disponibilità delle basette.</div>';return;
+ }
+ alternatives.forEach((combo,index)=>{
+  const card=document.createElement("div");card.className="alt-card";
+  const title=document.createElement("strong");title.textContent="Alternativa "+(index+1);
+  const detail=document.createElement("span");
+  detail.textContent=combo.map(x=>x.count+" × 10 ml · "+x.mg+" mg · "+x.mix).join("  +  ");
+  card.append(title,detail);host.appendChild(card);
+ });
+}
+
 function renderRecipe(){
  const rows=selectedRows();
  const row=rows[Number(nicEl.value)];
@@ -244,6 +330,7 @@ function renderRecipe(){
    host.appendChild(el);
   });
  }
+ renderAlternatives(row.boosters);
  result.classList.remove("hidden");
 }
 formatEl.addEventListener("change",()=>{
